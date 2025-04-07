@@ -1,57 +1,41 @@
 import { Products } from "@/app/models/Products";
-import React, { useContext } from "react";
+import Image from "next/image";
+import React from "react";
 import StarRating from "./star-rating";
-import { CartContext } from "@/app/reducers/cart-reducer";
-import { CART_ACTIONS_ADD_TO_CART } from "@/app/models/Constants";
+import AddToCart from "./add-to-cart";
 
-interface ISingleProductProps {
-  product: Products;
-}
-
-const SingleProductView = ({ product }: ISingleProductProps) => {
-  const { state, dispatch } = useContext(CartContext);
-
-  const addToCartClick = (prodId: number) => {
-    console.log("adding tot cart" + prodId);
-    dispatch({
-      type: CART_ACTIONS_ADD_TO_CART,
-      cartItem: { id: prodId },
-    });
-  };
-  console.log("cart", state.cart);
+const SingleProductView = ({ product }: { product: Products }) => {
   return (
-    <div className="max-w-sm rounded overflow-hidden shadow-lg h-100 flex flex-col ">
-      <img
-        className="w-full  h-1/2 object-contain"
-        src={product.image}
-        alt={product.title}
-      />
-      <div className="px-6 py-2">
-        <div className="font-bold text-xl mb-2 line-clamp-3 text-ellipsis">
-          {product.title}
-        </div>
-      </div>
-      <div className="px-6  pb-2 flex items-center flex-col">
-        <span className="flex items-center justify-center">
-          <div className="px-2">
-            <StarRating rating={product.rating?.rate} maxRating={5} />
+    <div>
+      <div className="grid grid-cols-3 grid-rows-3 pt-7 justify-center">
+        <Image
+          className="m-9 mr-9 row-span-3 col-span-1"
+          src={product.image}
+          alt={product.title}
+          width={250}
+          height={228}
+        ></Image>
+
+        <div className="pl-6 col-span-2">
+          <span className="text-3xl">{product.title}</span>
+          <div className="flex pt-3 pb-3 items-center">
+            <StarRating maxRating={5} rating={product.rating.rate} />
+            <span className="pl-2">{product.rating.count} ratings</span>
           </div>
-          <p className="text-sm text-gray-600">{product.rating?.count}</p>
-        </span>
-        <div>&#8377; {product.price}</div>
-        <div>
-          <button
-            className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2"
-            onClick={() => addToCartClick(product.id)}
-          >
-            Add to cart
-          </button>
-          <button className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-            Remove
-          </button>
+          <hr />
+          <div>
+            <span>&#8377;</span>
+            <span className=" text-4xl mt-7 "> {product.price}</span>
+            <div>Inclusive of all taxes</div>
+          </div>
+          <div className="pt-6">
+            <AddToCart prodId={product.id} />
+          </div>
+          <div></div>
         </div>
       </div>
     </div>
   );
 };
+
 export default SingleProductView;

@@ -1,10 +1,9 @@
 "use client";
 import React, { useContext, useEffect, useState } from "react";
 import { Products } from "../../models/Products";
-import SingleProductView from "./single-product-view";
+import ProductCard from "./product-card";
 import { CartContext } from "../../reducers/cart-reducer";
 import { CART_ACTIONS_ADD_PRODUCT } from "../../models/Constants";
-import { GetServerSideProps } from "next";
 import { fetchAllProducts } from "./fetch-products";
 
 const ProductsView = () => {
@@ -33,7 +32,7 @@ const ProductsView = () => {
   return (
     <div className="grid grid-cols-3 gap-4">
       {state.products?.map((product, index) => (
-        <SingleProductView
+        <ProductCard
           key={`${product.id}-${product.title}-${index}`}
           product={product}
         />

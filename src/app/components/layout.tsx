@@ -1,7 +1,7 @@
 import Link from "next/link";
 import React, { ReactNode } from "react";
 
-const Layout = ({ children }: { children: ReactNode }) => {
+const Layout = () => {
   return (
     <>
       <div>
@@ -35,7 +35,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
               <Link href="/contact" className="hover:text-yellow-500">
                 Contact
               </Link>
-              <Link href="/Cart" className="hover:text-yellow-500">
+              <Link href="/cart" className="hover:text-yellow-500">
                 Cart
               </Link>
             </div>
@@ -60,12 +60,6 @@ const Layout = ({ children }: { children: ReactNode }) => {
           </a>
         </div>
       </div>
-      {/* // Main Content */}
-      <main className="flex-grow">{children}</main>
-      {/* // Footer */}
-      <footer className="bg-gray-800 text-white p-4 text-center">
-        &copy; 2025 E-Shop. All rights reserved.
-      </footer>
     </>
   );
 };

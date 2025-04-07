@@ -1,15 +1,18 @@
 "use client";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { CartContext } from "../reducers/cart-reducer";
 import { CART_ACTIONS_REMOVE_FROM_CART } from "../models/Constants";
 import { Products } from "@/app/models/Products";
+import ProductCount from "../components/Products/add-to-cart";
 
 const Cart = () => {
   const { state, dispatch } = useContext(CartContext);
+  const [cartCount, setCartCount] = useState(0);
 
-  const removeFromCart = (productId: number) => {
-    dispatch({ type: CART_ACTIONS_REMOVE_FROM_CART, cartItemId: productId });
-  };
+  useEffect(() => {
+    const count = state.cart.reduce((acc, elm) => acc + elm.count, 0);
+    setCartCount(count);
+  }, [state.cart]);
 
   const findProductInCart = (prodId: number): Products | undefined =>
     state.products.find((prod) => prod.id === prodId);
@@ -18,7 +21,6 @@ const Cart = () => {
     <div className="cart-container p-8">
       <h2 className="text-2xl font-semibold mb-4">Shopping Cart</h2>
 
-      {/* Cart Items */}
       <div className="cart-items">
         {state.cart.length === 0 ? (
           <p>Your cart is empty.</p>
@@ -34,19 +36,14 @@ const Cart = () => {
                   <img
                     src={productDetails?.image}
                     alt={productDetails?.title}
-                    className="w-16 h-16 object-cover"
+                    className="w-50 h-50 object-cover"
                   />
                   <div>
                     <h3 className="font-semibold">{productDetails?.title}</h3>
                     <p className="text-gray-600">₹{productDetails?.price}</p>
+                    <ProductCount prodId={cartItem.id} />
                   </div>
                 </div>
-                <button
-                  onClick={() => removeFromCart(cartItem.id)}
-                  className="remove-btn bg-red-500 text-white py-1 px-3 rounded"
-                >
-                  Remove
-                </button>
               </div>
             );
           })
@@ -57,12 +54,18 @@ const Cart = () => {
       {state.cart.length > 0 && (
         <div className="cart-summary mt-4 p-4 border-t">
           <div className="flex justify-between mb-2">
-            <span className="font-semibold">Total:</span>
+            <span className="font-semibold">Total ({cartCount} items):</span>
             <span>
               ₹
               {state.cart
-                ?.map((el) => findProductInCart(el.id))
-                ?.reduce((total, item) => total + (item?.price || 0), 0)}
+                ?.map((el) => {
+                  return { product: findProductInCart(el.id), cartItem: el };
+                })
+                ?.reduce(
+                  (total, item) =>
+                    total + (item?.product?.price || 0) * item.cartItem.count,
+                  0
+                )}
             </span>
           </div>
           <button className="checkout-btn bg-blue-600 text-white py-2 px-4 rounded mt-4 w-full">

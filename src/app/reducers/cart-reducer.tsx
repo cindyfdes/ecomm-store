@@ -9,6 +9,7 @@ import {
   CART_ACTIONS_REMOVE_FROM_CART,
   CART_ACTIONS_REMOVE_PRODUCT,
 } from "./../models/Constants";
+import { stat } from "fs";
 
 type CartaContextType = { products: Products[]; cart: Cart[] };
 
@@ -23,7 +24,28 @@ const reducer = (state: CartaContextType, action: Action) => {
     case CART_ACTIONS_ADD_PRODUCT:
       return { ...state, products: [...state.products, action.product] };
     case CART_ACTIONS_ADD_TO_CART:
-      return { ...state, cart: [...state.cart, action.cartItem] };
+      const existingProductIndex = state.cart.findIndex(
+        (el) => el.id === action.cartItem.id
+      );
+      if (existingProductIndex !== -1) {
+        // Product already exists in cart
+        const updatedCart = [...state.cart];
+        const updatedProduct = updatedCart[existingProductIndex];
+
+        const updatedCount = updatedProduct.count + action.cartItem.count;
+        if (updatedCount > 0) {
+          updatedCart[existingProductIndex] = {
+            ...updatedProduct,
+            count: updatedCount,
+          };
+        } else {
+          updatedCart.splice(existingProductIndex, 1);
+        }
+
+        return { ...state, cart: updatedCart };
+      } else {
+        return { ...state, cart: [...state.cart, action.cartItem] };
+      }
     case CART_ACTIONS_REMOVE_FROM_CART:
       return {
         ...state,
