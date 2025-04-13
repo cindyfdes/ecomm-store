@@ -1,7 +1,7 @@
 "use client";
 import React, { useContext, useEffect, useState } from "react";
 import { CartContext } from "../reducers/cart-reducer";
-import { CART_ACTIONS_REMOVE_FROM_CART } from "../models/Constants";
+
 import { Products } from "@/app/models/Products";
 import ProductCount from "../components/Products/add-to-cart";
 
