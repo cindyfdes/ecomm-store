@@ -3,8 +3,9 @@ import React, { useContext, useEffect, useState } from "react";
 import { Products } from "../../models/Products";
 import ProductCard from "./product-card";
 import { CartContext } from "../../reducers/cart-reducer";
-import { CART_ACTIONS_ADD_PRODUCT } from "../../models/Constants";
+
 import { fetchAllProducts } from "./fetch-products";
+import { CART_ACTIONS_ADD_PRODUCT } from "../../models/constants/reducerConstants";
 
 const ProductsView = () => {
   const { state, dispatch } = useContext(CartContext);

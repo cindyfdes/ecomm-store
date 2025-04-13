@@ -2,3 +2,8 @@ export const CART_ACTIONS_ADD_PRODUCT = "ADD_PRODUCT";
 export const CART_ACTIONS_REMOVE_PRODUCT = "REMOVE_PRODUCT";
 export const CART_ACTIONS_ADD_TO_CART = "ADD_TO_CART";
 export const CART_ACTIONS_REMOVE_FROM_CART = "REMOVE_FROM_CART";
+
+export const loggedInUserConstants = {
+  ADD_USER: "ADD_USER",
+  CLEAR_USER: "CLEAR_USER",
+};

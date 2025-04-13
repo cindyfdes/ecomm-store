@@ -8,7 +8,7 @@ import {
   CART_ACTIONS_ADD_TO_CART,
   CART_ACTIONS_REMOVE_FROM_CART,
   CART_ACTIONS_REMOVE_PRODUCT,
-} from "./../models/Constants";
+} from "../models/constants/reducerConstants";
 import { stat } from "fs";
 
 type CartaContextType = { products: Products[]; cart: Cart[] };

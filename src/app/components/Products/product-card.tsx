@@ -15,8 +15,7 @@ const ProductCard = ({ product }: ISingleProductProps) => {
   const { state, dispatch } = useContext(CartContext);
 
   return (
-    <div className="max-w-sm rounded overflow-hidden shadow-lg h-100 flex flex-col ">
-      {/* <Link href={"/products-page/" + product.id}> */}
+    <div className="max-w-sm rounded overflow-hidden shadow-lg lg:h-100 md:h-150 flex flex-col ">
       <Image
         className="w-full  h-1/2 object-contain"
         width={180}
@@ -24,10 +23,9 @@ const ProductCard = ({ product }: ISingleProductProps) => {
         src={product.image}
         alt={product.title}
       />
-      {/* </Link> */}
       <div className="px-6 py-2">
         <div className="font-bold text-xl mb-2 line-clamp-3 text-ellipsis">
-          {product.title}
+          <Link href={"/products-page/" + product.id}>{product.title}</Link>
         </div>
       </div>
       <div className="px-6  pb-2 flex items-center flex-col">

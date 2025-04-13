@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React, { ReactNode } from "react";
+import LoginStatusDisplay from "./Header/login-status-display";
 
 const Layout = () => {
   return (
@@ -38,6 +39,7 @@ const Layout = () => {
               <Link href="/cart" className="hover:text-yellow-500">
                 Cart
               </Link>
+              <LoginStatusDisplay />
             </div>
           </div>
         </nav>

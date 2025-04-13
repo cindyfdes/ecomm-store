@@ -2,9 +2,8 @@ import { Cart } from "@/app/models/Cart";
 import {
   CART_ACTIONS_ADD_TO_CART,
   CART_ACTIONS_REMOVE_FROM_CART,
-} from "@/app/models/Constants";
-import { Products } from "@/app/models/Products";
-import { CartContext } from "@/app/reducers/cart-reducer";
+} from "@/app/models/constants/reducerConstants";
+import { CartContext } from "../../reducers/cart-reducer";
 import React, { useContext, useEffect, useState } from "react";
 
 const AddToCart = ({ prodId }: { prodId: number }) => {

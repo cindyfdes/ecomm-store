@@ -8,7 +8,9 @@ export const fetchAllProducts = async () => {
   let error: string | null = null;
 
   try {
-    const res = await fetch("http://localhost:4000/api/getAllProducts");
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/getAllProducts`
+    );
 
     if (!res.ok) {
       throw new Error(`Failed to fetch products, status: ${res.status}`);
