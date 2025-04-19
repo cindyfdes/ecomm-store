@@ -4,11 +4,12 @@ import { CartContext } from "../reducers/cart-reducer";
 
 import { Products } from "@/app/models/Products";
 import ProductCount from "../components/Products/add-to-cart";
+import { stat } from "fs";
 
 const Cart = () => {
   const { state, dispatch } = useContext(CartContext);
   const [cartCount, setCartCount] = useState(0);
-
+  console.log("cart state", state);
   useEffect(() => {
     const count = state.cart.reduce((acc, elm) => acc + elm.count, 0);
     setCartCount(count);

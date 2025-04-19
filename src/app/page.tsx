@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Auth from "./components/Auth";
 import ProductsView from "./components/Products/products-view";
-import Layout from "./components/layout";
+import Layout from "./components/layout/layout";
 import { CartProvider } from "./reducers/cart-reducer";
 import { Products } from "./models/Products";
 export default function Home() {

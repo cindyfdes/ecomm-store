@@ -22,13 +22,14 @@ type Action =
 const reducer = (state: CartaContextType, action: Action) => {
   switch (action.type) {
     case CART_ACTIONS_ADD_PRODUCT:
-      return { ...state, products: [...state.products, action.product] };
+      if (!state.products.find((prod) => prod.id === action.product.id))
+        return { ...state, products: [...state.products, action.product] };
+      else return state;
     case CART_ACTIONS_ADD_TO_CART:
       const existingProductIndex = state.cart.findIndex(
         (el) => el.id === action.cartItem.id
       );
       if (existingProductIndex !== -1) {
-        // Product already exists in cart
         const updatedCart = [...state.cart];
         const updatedProduct = updatedCart[existingProductIndex];
 

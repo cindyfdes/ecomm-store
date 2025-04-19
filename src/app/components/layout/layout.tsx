@@ -1,6 +1,7 @@
 import Link from "next/link";
 import React, { ReactNode } from "react";
-import LoginStatusDisplay from "./Header/login-status-display";
+import LoginStatusDisplay from "../Header/login-status-display";
+import SearchComponent from "./search-component";
 
 const Layout = () => {
   return (
@@ -13,21 +14,14 @@ const Layout = () => {
             </div>
 
             <div className="flex items-center space-x-2 w-1/3">
-              <input
-                type="text"
-                placeholder="Search products..."
-                className="w-full py-2 px-4 text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
-              />
-              <button className="bg-yellow-400 text-white py-2 px-4 rounded-md hover:bg-yellow-600">
-                Search
-              </button>
+              <SearchComponent />
             </div>
 
             <div className="hidden md:flex space-x-8 text-white">
               <Link href="/" className="hover:text-yellow-500">
                 Home
               </Link>
-              <Link href="/shop" className="hover:text-yellow-500">
+              {/* <Link href="/shop" className="hover:text-yellow-500">
                 Shop
               </Link>
               <Link href="/about" className="hover:text-yellow-500">
@@ -35,7 +29,7 @@ const Layout = () => {
               </Link>
               <Link href="/contact" className="hover:text-yellow-500">
                 Contact
-              </Link>
+              </Link> */}
               <Link href="/cart" className="hover:text-yellow-500">
                 Cart
               </Link>

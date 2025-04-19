@@ -7,3 +7,9 @@ export const loggedInUserConstants = {
   ADD_USER: "ADD_USER",
   CLEAR_USER: "CLEAR_USER",
 };
+
+export const searchResultConstants = {
+  ADD_SERACH_KEYWORD: "ADD_SERACH_KEYWORD",
+  CLEAR_SERACH: "CLEAR_SERACH",
+  ADD_SEARCH_RESULT: "ADD_SEARCH_RESULT",
+} as const;
