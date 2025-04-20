@@ -29,7 +29,7 @@ const SingleProductView = ({ product }: { product: Products }) => {
             <div>Inclusive of all taxes</div>
           </div>
           <div className="pt-6">
-            <AddToCart prodId={product.id} />
+            <AddToCart product={product} />
           </div>
           <div></div>
         </div>

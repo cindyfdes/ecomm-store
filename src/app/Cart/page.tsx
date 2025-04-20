@@ -4,19 +4,15 @@ import { CartContext } from "../reducers/cart-reducer";
 
 import { Products } from "@/app/models/Products";
 import ProductCount from "../components/Products/add-to-cart";
-import { stat } from "fs";
 
 const Cart = () => {
   const { state, dispatch } = useContext(CartContext);
   const [cartCount, setCartCount] = useState(0);
-  console.log("cart state", state);
+
   useEffect(() => {
     const count = state.cart.reduce((acc, elm) => acc + elm.count, 0);
     setCartCount(count);
   }, [state.cart]);
-
-  const findProductInCart = (prodId: number): Products | undefined =>
-    state.products.find((prod) => prod.id === prodId);
 
   return (
     <div className="cart-container p-8">
@@ -27,22 +23,21 @@ const Cart = () => {
           <p>Your cart is empty.</p>
         ) : (
           state.cart.map((cartItem) => {
-            const productDetails = findProductInCart(cartItem.id);
             return (
               <div
-                key={cartItem.id}
+                key={cartItem.product.id}
                 className="cart-item flex justify-between p-4 border-b mb-4"
               >
                 <div className="cart-item-details flex gap-4">
                   <img
-                    src={productDetails?.image}
-                    alt={productDetails?.title}
+                    src={cartItem.product?.image}
+                    alt={cartItem.product?.title}
                     className="w-50 h-50 object-cover"
                   />
                   <div>
-                    <h3 className="font-semibold">{productDetails?.title}</h3>
-                    <p className="text-gray-600">₹{productDetails?.price}</p>
-                    <ProductCount prodId={cartItem.id} />
+                    <h3 className="font-semibold">{cartItem.product?.title}</h3>
+                    <p className="text-gray-600">₹{cartItem.product?.price}</p>
+                    <ProductCount product={cartItem.product} />
                   </div>
                 </div>
               </div>
@@ -58,15 +53,11 @@ const Cart = () => {
             <span className="font-semibold">Total ({cartCount} items):</span>
             <span>
               ₹
-              {state.cart
-                ?.map((el) => {
-                  return { product: findProductInCart(el.id), cartItem: el };
-                })
-                ?.reduce(
-                  (total, item) =>
-                    total + (item?.product?.price || 0) * item.cartItem.count,
-                  0
-                )}
+              {state.cart?.reduce(
+                (total, item) =>
+                  total + (item?.product?.price || 0) * item.count,
+                0
+              )}
             </span>
           </div>
           <button className="checkout-btn bg-blue-600 text-white py-2 px-4 rounded mt-4 w-full">

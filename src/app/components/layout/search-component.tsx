@@ -37,7 +37,7 @@ const SearchComponent = () => {
         onChange={(e) => setSearchKeyword(e.target.value)}
         type="text"
         placeholder="Search products..."
-        className="w-full py-2 px-4 text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+        className="w-full py-2 px-4 text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 border-gray-500 border-1"
       />
     </div>
   );

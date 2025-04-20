@@ -1,4 +1,6 @@
+import { Products } from "./Products";
+
 export type Cart = {
-  id: number;
   count: number;
+  product: Products;
 };

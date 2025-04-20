@@ -36,7 +36,7 @@ const ProductCard = ({ product }: ISingleProductProps) => {
         </span>
         <div>&#8377; {product.price}</div>
         <div>
-          <AddToCart prodId={product.id} />
+          <AddToCart product={product} />
         </div>
       </div>
     </div>
