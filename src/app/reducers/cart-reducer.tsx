@@ -118,7 +118,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
         cartDispatch({
           type: "LOAD_INITIAL_CART",
-          cart: data?.map((c:{quantity:number}extends Products) => {
+          cart: data?.map((c: any) => {
             return { count: c.quantity, product: c.product };
           }),
         });

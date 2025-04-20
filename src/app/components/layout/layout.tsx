@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React, { ReactNode } from "react";
+import React, { ReactNode, Suspense } from "react";
 import LoginStatusDisplay from "../Header/login-status-display";
 import SearchComponent from "./search-component";
 
@@ -14,7 +14,9 @@ const Layout = () => {
             </div>
 
             <div className="flex items-center space-x-2 w-1/3">
-              <SearchComponent />
+              <Suspense fallback={<p>Loading...</p>}>
+                <SearchComponent />
+              </Suspense>
             </div>
 
             <div className="hidden md:flex space-x-8 text-white">
