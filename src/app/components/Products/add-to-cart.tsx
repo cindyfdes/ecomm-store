@@ -1,26 +1,26 @@
 import { Cart } from "@/app/models/Cart";
-import {
-  CART_ACTIONS_ADD_TO_CART,
-  CART_ACTIONS_REMOVE_FROM_CART,
-} from "@/app/models/constants/reducerConstants";
-import { CartContext } from "../../reducers/cart-context";
+import { useCartStore } from "../../stores/cart-store";
 import React, { useContext, useEffect, useState } from "react";
 import { Products } from "@/app/models/Products";
-import { useAuth } from "@/app/reducers/auth-context";
+import { useAuth } from "@/app/stores/auth-context";
 
 const AddToCart = ({ product }: { product: Products }) => {
   const { user } = useAuth();
-  const { state, dispatch } = useContext(CartContext);
+  const cart = useCartStore((state) => state.cart);
+  const addToCart = useCartStore((state) => state.addToCart);
+  const removeFromCart = useCartStore((state) => state.removeFromCart);
+
   const [productCartDetails, setProductCartDetails] = useState<
     Cart | undefined
   >();
 
   useEffect(() => {
-    console.log("state.cart", state.cart);
-    setProductCartDetails(
-      state.cart.find((el) => el.product.id === product.id)
-    );
-  }, [state.cart]);
+    setProductCartDetails(cart.find((el) => el.product.id === product.id));
+
+    if (!user) {
+      localStorage.setItem("user-cart", JSON.stringify(cart));
+    }
+  }, [cart]);
 
   const saveCartToDB = async (productId: number, quantity: number) => {
     if (user) {
@@ -42,11 +42,8 @@ const AddToCart = ({ product }: { product: Products }) => {
   };
 
   const addToCartClick = (count: number) => {
+    addToCart({ product: product, count });
     saveCartToDB(product.id, count);
-    dispatch({
-      type: CART_ACTIONS_ADD_TO_CART,
-      cartItem: { product: product, count },
-    });
   };
 
   const deleteCartFromDb = async (productId: number) => {
@@ -99,10 +96,7 @@ const AddToCart = ({ product }: { product: Products }) => {
           <button
             className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 cursor-pointer hover:bg-gray-700 hover:text-white"
             onClick={() => {
-              dispatch({
-                type: CART_ACTIONS_REMOVE_FROM_CART,
-                cartItemId: product.id,
-              });
+              removeFromCart(product.id);
               deleteCartFromDb(product.id);
             }}
           >

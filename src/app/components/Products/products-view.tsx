@@ -2,57 +2,60 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Products } from "../../models/Products";
 import ProductCard from "./product-card";
-import { CartContext } from "../../reducers/cart-context";
 
 import { fetchAllProducts } from "./fetch-products";
-import { CART_ACTIONS_ADD_PRODUCT } from "../../models/constants/reducerConstants";
 import { useSearchParams } from "next/navigation";
+import { useCartStore } from "@/app/stores/cart-store";
 
 const ProductsView = () => {
-  const { state, dispatch } = useContext(CartContext);
   const searchParams = useSearchParams();
   const searchKeyword = searchParams.get("sprefix");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [searchedProducts, setSearchedProducts] = useState<Products[]>([]);
+  const addProducts = useCartStore((state) => state.addProducts);
+  const products: Products[] = useCartStore((state) => state.products);
 
   useEffect(() => {
+    if (products.length > 0) return;
+
     setLoading(true);
-    const products = fetchAllProducts(null);
-    if (products) {
-      products
+    const rawProducts = fetchAllProducts(null);
+    if (rawProducts) {
+      rawProducts
         ?.then((res) => {
           if (res.error) {
             setError(res.error);
             return;
           }
-          res.products?.forEach((product: Products) =>
-            dispatch({ product, type: CART_ACTIONS_ADD_PRODUCT })
-          );
-          setSearchedProducts(res.products);
+          addProducts(res.products);
         })
         .finally(() => setLoading(false));
     }
   }, []);
 
   useEffect(() => {
+    if (products.length > 0) return;
+
     setLoading(true);
-    const products = fetchAllProducts(searchKeyword);
-    if (products) {
-      products
+
+    const rawProducts = fetchAllProducts(searchKeyword);
+    if (rawProducts) {
+      rawProducts
         ?.then((res) => {
           if (res.error) {
             setError(res.error);
             return;
           }
-          res.products?.forEach((product: Products) =>
-            dispatch({ product, type: CART_ACTIONS_ADD_PRODUCT })
-          );
-          setSearchedProducts(res.products);
+          addProducts(res.products);
         })
         .finally(() => setLoading(false));
     }
   }, [searchKeyword]);
+
+  useEffect(() => {
+    setSearchedProducts(products);
+  }, [products]);
 
   if (error) {
     return <div>{error}</div>;

@@ -1,7 +1,6 @@
 import { Products } from "@/app/models/Products";
 import React, { useContext } from "react";
 import StarRating from "./star-rating";
-import { CartContext } from "@/app/reducers/cart-context";
 import AddToCart from "./add-to-cart";
 import Link from "next/link";
 import Image from "next/image";
@@ -11,8 +10,6 @@ interface ISingleProductProps {
 }
 
 const ProductCard = ({ product }: ISingleProductProps) => {
-  const { state, dispatch } = useContext(CartContext);
-
   return (
     <div className="max-w-sm rounded overflow-hidden shadow-lg lg:h-100 md:h-150 flex flex-col ">
       <Image

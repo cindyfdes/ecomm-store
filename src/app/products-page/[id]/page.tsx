@@ -1,5 +1,5 @@
 "use client";
-import { CartContext } from "@/app/reducers/cart-context";
+import { useCartStore } from "@/app/stores/cart-store";
 import React, { use, useContext, useEffect, useState } from "react";
 import { Products } from "@/app/models/Products";
 import { useParams } from "next/navigation";
@@ -7,12 +7,12 @@ import SingleProductView from "@/app/components/Products/single-product-view";
 
 const ProductDetails = () => {
   const { id } = useParams<{ id: string }>();
-  const { state } = useContext(CartContext);
+  const products: Products[] = useCartStore((state) => state.products);
   const [selectedProduct, setSelectedProduct] = useState<Products>();
   console.log("id", id);
   useEffect(() => {
-    const product = state.products.find((prod) => prod.id == parseInt(id));
-    console.log(id, state.products);
+    const product = products.find((prod) => prod.id == parseInt(id));
+
     if (product) {
       setSelectedProduct(product);
     } else {

@@ -5,8 +5,8 @@ import React, { useContext } from "react";
 import { signOut } from "firebase/auth";
 import { auth } from "../../../client/firebase";
 import { loggedInUserConstants } from "@/app/models/constants/reducerConstants";
-import { useAuth } from "@/app/reducers/auth-context";
-import PersonIcon from '@mui/icons-material/Person';
+import { useAuth } from "@/app/stores/auth-context";
+import PersonIcon from "@mui/icons-material/Person";
 
 const LoginStatusDisplay = () => {
   const { user } = useAuth();
@@ -33,7 +33,9 @@ const LoginStatusDisplay = () => {
         </Link>
       ) : (
         <div className="flex ">
-          <div ><PersonIcon/> {user.displayName ?? user.email}</div>
+          <div>
+            <PersonIcon /> {user.displayName ?? user.email}
+          </div>
           <button onClick={LogoutButton} className="hover:cursor-pointer pl-3">
             Log out
           </button>

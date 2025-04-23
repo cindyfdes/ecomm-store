@@ -1,27 +1,27 @@
 "use client";
 import React, { useContext, useEffect, useState } from "react";
-import { CartContext } from "../reducers/cart-context";
+import { useCartStore } from "../stores/cart-store";
 
 import ProductCount from "../components/Products/add-to-cart";
 
 const Cart = () => {
-  const { state, dispatch } = useContext(CartContext);
+  const cart = useCartStore((state) => state.cart);
   const [cartCount, setCartCount] = useState<number>();
 
   useEffect(() => {
-    const count = state.cart.reduce((acc, elm) => acc + elm.count, 0);
+    const count = cart.reduce((acc, elm) => acc + elm.count, 0);
     setCartCount(count);
-  }, [state.cart]);
+  }, [cart]);
 
   return (
     <div className="cart-container p-8">
       <h2 className="text-2xl font-semibold mb-4">Shopping Cart</h2>
 
       <div className="cart-items">
-        {state.cart.length === 0 ? (
+        {cart.length === 0 ? (
           <p>Your cart is empty.</p>
         ) : (
-          state.cart.map((cartItem) => {
+          cart.map((cartItem) => {
             return (
               <div
                 key={cartItem.product.id}
@@ -46,13 +46,13 @@ const Cart = () => {
       </div>
 
       {/* Cart Summary */}
-      {state.cart.length > 0 && (
+      {cart.length > 0 && (
         <div className="cart-summary mt-4 p-4 border-t">
           <div className="flex justify-between mb-2">
             <span className="font-semibold">Total ({cartCount} items):</span>
             <span>
               ₹
-              {state.cart?.reduce(
+              {cart?.reduce(
                 (total, item) =>
                   total + (item?.product?.price || 0) * item.count,
                 0

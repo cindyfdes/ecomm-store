@@ -1,10 +1,8 @@
 "use server";
 
 import { Products } from "@/app/models/Products";
-import { Console } from "console";
 
 export const fetchAllProducts = async (searchKeyword: string | null) => {
-  console.log("searchKeyword", searchKeyword);
   let products: Products[] = [];
   let error: string | null = null;
   let res;

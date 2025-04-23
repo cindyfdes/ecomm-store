@@ -13,7 +13,7 @@ import React, {
 } from "react";
 import { userRoles } from "@/app/models/constants/common";
 import { loggedInUserConstants } from "@/app/models/constants/reducerConstants";
-import { useAuth } from "@/app/reducers/auth-context";
+import { useAuth } from "@/app/stores/auth-context";
 
 type FormItems = {
   email: string;

@@ -5,7 +5,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import Link from "next/link";
 import { RegisterUserConstants } from "../models/constants/firebase";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../reducers/auth-context";
+import { useAuth } from "../stores/auth-context";
 
 type FormItems = {
   email: string;
