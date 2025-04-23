@@ -1,13 +1,12 @@
 "use client";
 import React, { useContext, useEffect, useState } from "react";
-import { CartContext } from "../reducers/cart-reducer";
+import { CartContext } from "../reducers/cart-context";
 
-import { Products } from "@/app/models/Products";
 import ProductCount from "../components/Products/add-to-cart";
 
 const Cart = () => {
   const { state, dispatch } = useContext(CartContext);
-  const [cartCount, setCartCount] = useState(0);
+  const [cartCount, setCartCount] = useState<number>();
 
   useEffect(() => {
     const count = state.cart.reduce((acc, elm) => acc + elm.count, 0);

@@ -1,17 +1,19 @@
 "use client";
-import { UserContext } from "@/app/reducers/user-reducer";
+
 import { RegisterUserConstants } from "../../models/constants/firebase";
 import { auth } from "@/client/firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import React, {
   ChangeEvent,
   ChangeEventHandler,
   useContext,
+  useEffect,
   useState,
 } from "react";
 import { userRoles } from "@/app/models/constants/common";
 import { loggedInUserConstants } from "@/app/models/constants/reducerConstants";
+import { useAuth } from "@/app/reducers/auth-context";
 
 type FormItems = {
   email: string;
@@ -22,13 +24,20 @@ type FormItems = {
 
 const RegisterUser = () => {
   const router = useRouter();
-  const { loggedInUserDispatch } = useContext(UserContext);
+  const { user } = useAuth();
+
   const [formItems, setFormItems] = useState<FormItems>({
     email: "",
     password: "",
     userName: "",
     confirmPassword: "",
   });
+
+  useEffect(() => {
+    if (user) {
+      router.push("/");
+    }
+  }, [user]);
 
   const onClickRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -39,6 +48,10 @@ const RegisterUser = () => {
         formItems.email,
         formItems.password
       );
+      await updateProfile(firebaseResp.user, {
+        displayName: formItems.userName,
+      });
+      const user = firebaseResp.user;
 
       const backendApiResp = await fetch(
         `${BACKEND_URL}/api/user/save-new-user`,
@@ -61,17 +74,7 @@ const RegisterUser = () => {
         );
       }
 
-      const loggedInUser = {
-        token: await firebaseResp.user.getIdToken(),
-        role: userRoles.USER,
-        userName: formItems.userName,
-      };
-
-      loggedInUserDispatch({
-        payload: loggedInUser,
-        type: loggedInUserConstants.ADD_USER,
-      });
-      router.push("/");
+      await user.reload();
     } catch (err: any) {
       if (err.code === RegisterUserConstants.ERROR_EMAIL_ALREADY_REGISTERED) {
         alert(

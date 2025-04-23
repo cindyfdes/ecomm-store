@@ -1,22 +1,21 @@
 "use client";
-import { UserContext } from "@/app/reducers/user-reducer";
+
 import Link from "next/link";
 import React, { useContext } from "react";
 import { signOut } from "firebase/auth";
 import { auth } from "../../../client/firebase";
 import { loggedInUserConstants } from "@/app/models/constants/reducerConstants";
+import { useAuth } from "@/app/reducers/auth-context";
+import PersonIcon from '@mui/icons-material/Person';
 
 const LoginStatusDisplay = () => {
-  const { loggedInUser, loggedInUserDispatch } = useContext(UserContext);
-  console.log("user from login-status-display", loggedInUser);
+  const { user } = useAuth();
+
   const LogoutButton = () => {
     const handleLogout = async () => {
       try {
         await signOut(auth);
-        loggedInUserDispatch({
-          payload: null,
-          type: loggedInUserConstants.CLEAR_USER,
-        });
+
         console.log("Logged out successfully!");
         // You can redirect or update the UI as needed here
       } catch (error) {
@@ -25,17 +24,20 @@ const LoginStatusDisplay = () => {
     };
     handleLogout();
   };
+
   return (
     <div>
-      {loggedInUser == null ? (
+      {!user ? (
         <Link href="/login" className="hover:text-yellow-500">
           Log In
         </Link>
       ) : (
-        <>
-          <p>Welcome {loggedInUser.userName}</p>
-          <button onClick={LogoutButton}>Log out</button>
-        </>
+        <div className="flex ">
+          <div ><PersonIcon/> {user.displayName ?? user.email}</div>
+          <button onClick={LogoutButton} className="hover:cursor-pointer pl-3">
+            Log out
+          </button>
+        </div>
       )}
     </div>
   );

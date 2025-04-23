@@ -1,20 +1,11 @@
 "use client";
 import React, { ChangeEvent, useContext, useEffect, useState } from "react";
 import { auth } from "../../client/firebase";
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut,
-  User,
-} from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import Link from "next/link";
 import { RegisterUserConstants } from "../models/constants/firebase";
-import { UserContext } from "../reducers/user-reducer";
-import { userRoles } from "../models/constants/common";
-import { loggedInUserConstants } from "../models/constants/reducerConstants";
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL;
+import { useRouter } from "next/navigation";
+import { useAuth } from "../reducers/auth-context";
 
 type FormItems = {
   email: string;
@@ -22,27 +13,37 @@ type FormItems = {
 };
 
 const Login: React.FC = () => {
-  const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
-  const [info, setInfo] = useState<string>("");
-  const [fetchedData, setFetchedData] = useState<string>("");
+  const router = useRouter();
+  const { user } = useAuth();
   const [formItems, setFormItems] = useState<FormItems>({
     email: "",
     password: "",
   });
-  const { loggedInUser, loggedInUserDispatch } = useContext(UserContext);
+  const [loading, setLoading] = useState(false);
+  const [loginErrorMsg, setLoginErrorMsg] = useState("");
+
+  useEffect(() => {
+    if (user) {
+      router.push("/");
+    } else {
+      setLoginErrorMsg("Something went wrong.");
+    }
+  }, [user]);
 
   const onClickSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
 
     signInWithEmailAndPassword(auth, formItems.email, formItems.password).catch(
       (err) => {
         if (
           err.code === RegisterUserConstants.LOGIN_ERROR_INVALID_CREDENTIALS
         ) {
-          alert("Username or password is invalid");
+          setLoginErrorMsg("Username or password is invalid");
         } else {
-          alert("Registration failed: " + err.message);
+          setLoginErrorMsg("Registration failed: " + err.message);
         }
+        setLoading(false);
       }
     );
   };
@@ -53,77 +54,6 @@ const Login: React.FC = () => {
     setFormItems({ ...formItems, [name]: value });
   };
 
-  const logout = async () => {
-    await signOut(auth);
-    setFirebaseUser(null);
-  };
-
-  const saveData = async () => {
-    if (!firebaseUser) return;
-
-    const token = await firebaseUser.getIdToken();
-    const res = await fetch(`${BACKEND_URL}/data`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ info }),
-    });
-
-    const result = await res.text();
-    alert(result);
-  };
-
-  const loadData = async () => {
-    if (!firebaseUser) return;
-
-    const token = await firebaseUser.getIdToken();
-    const res = await fetch(`${BACKEND_URL}/data`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!res.ok) {
-      alert("Failed to fetch data");
-      return;
-    }
-
-    const data = await res.json();
-    setFetchedData(JSON.stringify(data, null, 2));
-  };
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      setFirebaseUser(firebaseUser);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  const createUserObject = async () => {
-    if (firebaseUser != null) {
-      return {
-        token: await firebaseUser.getIdToken(),
-        role: userRoles.USER,
-        userName: "test",
-      };
-    }
-    return null;
-  };
-
-  useEffect(() => {
-    createUserObject().then((res) => {
-      if (res != null) {
-        loggedInUserDispatch({
-          payload: res,
-          type: loggedInUserConstants.ADD_USER,
-        });
-      }
-    });
-  }, [firebaseUser]);
-
   return (
     <div className="flex justify-center h-screen ">
       <div className="w-1/2 h-1/2 border-solid border-slate-300 border-2 p-5 rounded-md m-5 flex justify-center flex-col">
@@ -133,9 +63,16 @@ const Login: React.FC = () => {
             className="flex-1 flex flex-col justify-around"
           >
             <div className="mt-2">
+              <div
+                className={`text-red-500 text-sm h-5 transition-opacity duration-200 ${
+                  loginErrorMsg ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                {loginErrorMsg || ""}
+              </div>
               <label
                 htmlFor="email"
-                className="block mb-1 text-sm font-medium text-gray-900 dark:text-white"
+                className="block mb-1 text-sm font-medium text-gray-900 dark:text-white "
               >
                 E-mail
               </label>
@@ -148,6 +85,7 @@ const Login: React.FC = () => {
                 required
                 placeholder="Enter email"
                 name="email"
+                disabled={loading}
               />
             </div>
             <div className="mt-2">
@@ -166,41 +104,32 @@ const Login: React.FC = () => {
                 value={formItems.password}
                 onChange={onChangeFormItems}
                 name="password"
+                disabled={loading}
               />
             </div>
 
-            <button
-              type="submit"
-              className="rounded-full mt-3 text-center bg-gray-300 p-2 cursor-pointer w-1/2 mx-auto"
-            >
-              Log In
-            </button>
+            {!loading ? (
+              <button
+                type="submit"
+                className="rounded-full mt-3 text-center bg-gray-300 p-2 cursor-pointer w-1/2 mx-auto"
+              >
+                Log In
+              </button>
+            ) : (
+              <div
+                className="text-center mx-auto mt-3 inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-surface motion-reduce:animate-[spin_1.5s_linear_infinite] dark:text-white"
+                role="status"
+              >
+                <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+                  Loading...
+                </span>
+              </div>
+            )}
           </form>
         </div>
         <Link href="/login/register-user" className="hover:text-yellow-500">
           New here?? Create an account.
         </Link>
-
-        {/* {/* {!user ? (
-        <RegisterUser />
-      ) : (
-        <>
-          <p>Logged in as: {user.email}</p>
-          <button onClick={logout}>Logout</button>
-
-          <hr />
-          <input
-            value={info}
-            onChange={(e) => setInfo(e.target.value)}
-            placeholder="Enter info to save"
-          />
-          <button onClick={saveData}>Save to Firestore</button>
-
-          <hr />
-          <button onClick={loadData}>Load from Firestore</button>
-          <pre>{fetchedData}</pre> 
-        </>
-      )} */}
       </div>
     </div>
   );

@@ -1,5 +1,11 @@
 "use client";
-import React, { createContext, ReactNode, useEffect, useReducer } from "react";
+import React, {
+  createContext,
+  ReactNode,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
 import { Products } from "@/app/models/Products";
 import { Cart } from "../models/Cart";
 
@@ -10,35 +16,11 @@ import {
   CART_ACTIONS_REMOVE_FROM_CART,
   CART_ACTIONS_REMOVE_PRODUCT,
 } from "../models/constants/reducerConstants";
-import { stat } from "fs";
+import { useAuth } from "./auth-context";
 
-type CartaContextType = { products: Products[]; cart: Cart[] };
-
-const saveCart = (productId: number, quantity: number) => {
-  if (true) {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cart/save-cart-item`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: "test@123",
-        productId,
-        quantity,
-      }),
-    });
-  }
-};
-
-const deleteFromCart = (productId: number) => {
-  if (true) {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cart/delete-cart-item`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: "test@123",
-        productId,
-      }),
-    });
-  }
+type CartaContextType = {
+  products: Products[];
+  cart: Cart[];
 };
 
 type Action =
@@ -71,15 +53,11 @@ const reducer = (state: CartaContextType, action: Action) => {
         } else {
           updatedCart.splice(existingProductIndex, 1);
         }
-        saveCart(action.cartItem.product.id, updatedCount);
         return { ...state, cart: updatedCart };
       } else {
-        saveCart(action.cartItem.product.id, 1);
-
         return { ...state, cart: [...state.cart, action.cartItem] };
       }
     case CART_ACTIONS_REMOVE_FROM_CART:
-      deleteFromCart(action.cartItemId);
       return {
         ...state,
         cart: state.cart.filter((c) => c.product.id != action.cartItemId),
@@ -91,7 +69,6 @@ const reducer = (state: CartaContextType, action: Action) => {
   }
 };
 
-const getUserCart = () => {};
 const initialState: CartaContextType = {
   products: [],
   cart: [],
@@ -103,36 +80,46 @@ export const CartContext = createContext<{
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartContext, cartDispatch] = useReducer(reducer, initialState);
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchInitialCart = async () => {
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/cart/getUserCart`,
-          {
-            method: "GET",
-            headers: { "Content-Type": "application/json", email: "test@123" },
-          }
-        );
-        const data = await res.json();
-
-        cartDispatch({
-          type: "LOAD_INITIAL_CART",
-          cart: data?.map((c: any) => {
-            return { count: c.quantity, product: c.product };
-          }),
-        });
+        if (user) {
+          const token = await user?.getIdToken();
+          console.log("token", token);
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/cart/getUserCart`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                authorization: "Bearer " + token,
+              },
+            }
+          );
+          const data = await res.json();
+          console.log("data from cart context", data);
+          cartDispatch({
+            type: "LOAD_INITIAL_CART",
+            cart: data?.map((c: any) => {
+              return { count: c.quantity, product: c.product };
+            }),
+          });
+        }
       } catch (err) {
         console.error("Failed to fetch initial cart", err);
       }
     };
-
     fetchInitialCart();
-  }, []);
+  }, [user]);
 
   return (
     <CartContext.Provider
-      value={{ state: cartContext, dispatch: cartDispatch }}
+      value={{
+        state: { ...cartContext },
+        dispatch: cartDispatch,
+      }}
     >
       {children}
     </CartContext.Provider>

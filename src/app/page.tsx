@@ -2,7 +2,7 @@ import Link from "next/link";
 import Auth from "./components/Auth";
 import ProductsView from "./components/Products/products-view";
 import Layout from "./components/layout/layout";
-import { CartProvider } from "./reducers/cart-reducer";
+import { CartProvider } from "./reducers/cart-context";
 import { Products } from "./models/Products";
 import { Suspense } from "react";
 export default function Home() {

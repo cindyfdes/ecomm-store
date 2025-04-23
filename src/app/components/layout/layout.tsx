@@ -2,6 +2,7 @@ import Link from "next/link";
 import React, { ReactNode, Suspense } from "react";
 import LoginStatusDisplay from "../Header/login-status-display";
 import SearchComponent from "./search-component";
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 const Layout = () => {
   return (
@@ -32,8 +33,14 @@ const Layout = () => {
               <Link href="/contact" className="hover:text-yellow-500">
                 Contact
               </Link> */}
-              <Link href="/cart" className="hover:text-yellow-500">
-                Cart
+              <Link href="/cart" className="relative hover:text-yellow-500">
+                <div className="relative flex pr-2">
+                  Cart
+                  <ShoppingCartIcon/>
+                  <span className="absolute top-0 right-0 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full -mt-2 -mr-2">
+                    3
+                  </span>
+                </div>
               </Link>
               <LoginStatusDisplay />
             </div>

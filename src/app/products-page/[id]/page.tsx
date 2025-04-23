@@ -1,5 +1,5 @@
 "use client";
-import { CartContext } from "@/app/reducers/cart-reducer";
+import { CartContext } from "@/app/reducers/cart-context";
 import React, { use, useContext, useEffect, useState } from "react";
 import { Products } from "@/app/models/Products";
 import { useParams } from "next/navigation";

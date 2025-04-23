@@ -1,7 +1,7 @@
 import { Products } from "@/app/models/Products";
 import React, { useContext } from "react";
 import StarRating from "./star-rating";
-import { CartContext } from "@/app/reducers/cart-reducer";
+import { CartContext } from "@/app/reducers/cart-context";
 import AddToCart from "./add-to-cart";
 import Link from "next/link";
 import Image from "next/image";

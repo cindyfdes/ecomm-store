@@ -3,11 +3,13 @@ import {
   CART_ACTIONS_ADD_TO_CART,
   CART_ACTIONS_REMOVE_FROM_CART,
 } from "@/app/models/constants/reducerConstants";
-import { CartContext } from "../../reducers/cart-reducer";
+import { CartContext } from "../../reducers/cart-context";
 import React, { useContext, useEffect, useState } from "react";
 import { Products } from "@/app/models/Products";
+import { useAuth } from "@/app/reducers/auth-context";
 
 const AddToCart = ({ product }: { product: Products }) => {
+  const { user } = useAuth();
   const { state, dispatch } = useContext(CartContext);
   const [productCartDetails, setProductCartDetails] = useState<
     Cart | undefined
@@ -20,11 +22,48 @@ const AddToCart = ({ product }: { product: Products }) => {
     );
   }, [state.cart]);
 
+  const saveCartToDB = async (productId: number, quantity: number) => {
+    if (user) {
+      const token = await user.getIdToken();
+
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cart/save-cart-item`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          email: user.email,
+          productId,
+          quantity,
+        }),
+      });
+    }
+  };
+
   const addToCartClick = (count: number) => {
+    saveCartToDB(product.id, count);
     dispatch({
       type: CART_ACTIONS_ADD_TO_CART,
       cartItem: { product: product, count },
     });
+  };
+
+  const deleteCartFromDb = async (productId: number) => {
+    if (user) {
+      const token = await user.getIdToken();
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cart/delete-cart-item`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          email: user.email,
+          productId,
+        }),
+      });
+    }
   };
 
   return (
@@ -64,6 +103,7 @@ const AddToCart = ({ product }: { product: Products }) => {
                 type: CART_ACTIONS_REMOVE_FROM_CART,
                 cartItemId: product.id,
               });
+              deleteCartFromDb(product.id);
             }}
           >
             Remove from Cart
