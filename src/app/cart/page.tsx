@@ -9,7 +9,7 @@ const Cart = () => {
   const [cartCount, setCartCount] = useState<number>();
 
   useEffect(() => {
-    const count = cart.reduce((acc, elm) => acc + elm.count, 0);
+    const count = cart.reduce((acc, elm) => acc + elm.quantity, 0);
     setCartCount(count);
   }, [cart]);
 
@@ -54,7 +54,7 @@ const Cart = () => {
               ₹
               {cart?.reduce(
                 (total, item) =>
-                  total + (item?.product?.price || 0) * item.count,
+                  total + (item?.product?.price || 0) * item.quantity,
                 0
               )}
             </span>

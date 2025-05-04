@@ -1,6 +1,7 @@
 import { Products } from "./Products";
 
 export type Cart = {
-  count: number;
+  quantity: number;
+  cartId?: string;
   product: Products;
 };

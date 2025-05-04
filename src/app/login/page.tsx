@@ -25,8 +25,6 @@ const Login: React.FC = () => {
   useEffect(() => {
     if (user) {
       router.push("/");
-    } else {
-      setLoginErrorMsg("Something went wrong.");
     }
   }, [user]);
 

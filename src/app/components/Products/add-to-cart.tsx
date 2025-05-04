@@ -16,51 +16,13 @@ const AddToCart = ({ product }: { product: Products }) => {
 
   useEffect(() => {
     setProductCartDetails(cart.find((el) => el.product.id === product.id));
-
-    if (!user) {
-      localStorage.setItem("user-cart", JSON.stringify(cart));
-    }
   }, [cart]);
 
-  const saveCartToDB = async (productId: number, quantity: number) => {
-    if (user) {
-      const token = await user.getIdToken();
-
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cart/save-cart-item`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          email: user.email,
-          productId,
-          quantity,
-        }),
-      });
-    }
-  };
-
   const addToCartClick = (count: number) => {
-    addToCart({ product: product, count });
-    saveCartToDB(product.id, count);
-  };
-
-  const deleteCartFromDb = async (productId: number) => {
-    if (user) {
-      const token = await user.getIdToken();
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cart/delete-cart-item`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          email: user.email,
-          productId,
-        }),
-      });
-    }
+    addToCart(
+      { product, quantity: count, cartId: productCartDetails?.cartId },
+      user
+    );
   };
 
   return (
@@ -76,16 +38,16 @@ const AddToCart = ({ product }: { product: Products }) => {
         <div className="flex">
           <button
             className={`inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 ${
-              productCartDetails.count <= 0
+              productCartDetails.quantity <= 0
                 ? "cursor-not-allowed"
                 : "hover:bg-gray-700 cursor-pointer hover:text-white"
             }`}
             onClick={() => addToCartClick(-1)}
-            disabled={productCartDetails.count <= 0}
+            disabled={productCartDetails.quantity <= 0}
           >
             -
           </button>
-          {productCartDetails.count}
+          {productCartDetails.quantity}
           <button
             className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 ml-2 cursor-pointer hover:bg-gray-700 hover:text-white"
             onClick={() => addToCartClick(1)}
@@ -96,8 +58,7 @@ const AddToCart = ({ product }: { product: Products }) => {
           <button
             className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 cursor-pointer hover:bg-gray-700 hover:text-white"
             onClick={() => {
-              removeFromCart(product.id);
-              deleteCartFromDb(product.id);
+              removeFromCart(product.id, productCartDetails.cartId, user);
             }}
           >
             Remove from Cart

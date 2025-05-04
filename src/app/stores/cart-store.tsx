@@ -2,48 +2,108 @@ import { Products } from "@/app/models/Products";
 import { Cart } from "../models/Cart";
 
 import { create } from "zustand";
+import { User } from "firebase/auth";
 
 type cartStore = {
   cart: Cart[];
   products: Products[];
   addProducts: (products: Products[]) => void;
-  addToCart: (cartItem: Cart) => void;
-  removeFromCart: (productId: number) => void;
+  addToCart: (item: Cart, user: User | null) => void;
+  removeFromCart: (
+    productId: number,
+    cartId: string | undefined,
+    user: User | null
+  ) => void;
   initializeCart: (items: Cart[]) => void;
 };
+
 export const useCartStore = create<cartStore>((set, get) => ({
   cart: [],
   products: [],
   addProducts: (products: Products[]) => {
     set(() => ({ products }));
   },
-  addToCart: (cartItem: Cart) => {
-    set((state) => {
-      const exisitngCartItemIndex = state.cart.findIndex(
-        (el) => el.product.id == cartItem.product.id
-      );
-      if (exisitngCartItemIndex == -1) {
-        return { cart: [...state.cart, cartItem] };
-      } else {
-        const updatedCart = [...state.cart];
-        const updatedItem = updatedCart[exisitngCartItemIndex];
-        const updatedCount = updatedItem.count + cartItem.count;
-        if (updatedCount > 0) {
-          updatedCart[exisitngCartItemIndex] = {
-            ...updatedItem,
-            count: updatedCount,
-          };
+  addToCart: async (item: Cart, user: User | null) => {
+    try {
+      if (user) {
+        const token = await user.getIdToken();
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/cart/save-cart-item`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              email: user.email,
+              productId: item.product.id,
+              quantity: item.quantity,
+              cartId: item.cartId,
+            }),
+          }
+        );
+
+        if (!res.ok) throw new Error("Failed to sync with DB");
+        const resDetails = await res.json();
+        const cart = get().cart;
+        const existing = cart.find((el) => el.product.id === item.product.id);
+
+        if (existing) {
+          existing.quantity += item.quantity;
+          set({ cart: [...cart] });
         } else {
-          updatedCart.splice(exisitngCartItemIndex, 1);
+          set({ cart: [...cart, { ...item, cartId: resDetails.cartId }] });
         }
-        return { cart: updatedCart };
+      } else {
+        const cart = get().cart;
+        const existing = cart.find((el) => el.product.id === item.product.id);
+
+        if (existing) {
+          existing.quantity += item.quantity;
+          set({ cart: [...cart] });
+          localStorage.setItem("user-cart", JSON.stringify(cart));
+        } else {
+          set({ cart: [...cart, item] });
+          localStorage.setItem("user-cart", JSON.stringify([...cart, item]));
+        }
       }
-    });
+    } catch (err) {
+      console.error("Error adding to cart:", err);
+    }
   },
-  removeFromCart: (productId: number) => {
-    set((state) => {
-      return { cart: state.cart.filter((el) => el.product.id !== productId) };
-    });
+  removeFromCart: async (
+    productId: number,
+    cartId: string | undefined,
+    user: User | null
+  ) => {
+    if (user) {
+      const token = await user.getIdToken();
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/cart/delete-cart-item`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            email: user.email,
+            productId,
+            cartId,
+          }),
+        }
+      );
+      if (!res.ok) throw new Error("Failed to sync with DB");
+      const cart = get().cart;
+      const filteredCart = cart.filter((el) => el.product.id !== productId);
+      set({ cart: filteredCart });
+    } else {
+      const cart = get().cart;
+      const filteredCart = cart.filter((el) => el.product.id !== productId);
+      set({ cart: filteredCart });
+      localStorage.setItem("user-cart", JSON.stringify(filteredCart));
+    }
   },
   initializeCart: (cart) => {
     set(() => ({ cart }));
