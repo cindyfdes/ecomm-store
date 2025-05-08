@@ -15,28 +15,9 @@ const ProductsView = () => {
   const [searchedProducts, setSearchedProducts] = useState<Products[]>([]);
   const addProducts = useCartStore((state) => state.addProducts);
   const products: Products[] = useCartStore((state) => state.products);
+  console.log("searchKeyword", searchKeyword);
 
   useEffect(() => {
-    if (products.length > 0) return;
-
-    setLoading(true);
-    const rawProducts = fetchAllProducts(null);
-    if (rawProducts) {
-      rawProducts
-        ?.then((res) => {
-          if (res.error) {
-            setError(res.error);
-            return;
-          }
-          addProducts(res.products);
-        })
-        .finally(() => setLoading(false));
-    }
-  }, []);
-
-  useEffect(() => {
-    if (products.length > 0) return;
-
     setLoading(true);
 
     const rawProducts = fetchAllProducts(searchKeyword);

@@ -15,11 +15,9 @@ const Layout = () => {
               <a href="/">E-Shop</a>
             </div>
 
-            <div className="flex items-center space-x-2 w-1/3">
-              <Suspense fallback={<p>Loading...</p>}>
-                <SearchComponent />
-              </Suspense>
-            </div>
+            <Suspense fallback={<p>Loading...</p>}>
+              <SearchComponent />
+            </Suspense>
 
             <div className="hidden md:flex space-x-8 text-white">
               <Link href="/" className="hover:text-yellow-500">
