@@ -27,7 +27,7 @@ const AddToCart = ({ product }: { product: Products }) => {
 
   return (
     <>
-      {productCartDetails == undefined ? (
+      {productCartDetails == undefined || productCartDetails.quantity == 0 ? (
         <button
           className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 cursor-pointer hover:bg-gray-700 hover:text-white"
           onClick={() => addToCartClick(1)}
@@ -51,7 +51,7 @@ const AddToCart = ({ product }: { product: Products }) => {
           <button
             className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 ml-2 cursor-pointer hover:bg-gray-700 hover:text-white"
             onClick={() => addToCartClick(1)}
-            // disabled={productCartDetails.count >=prod}
+            // disabled={productCartDetails.quantity >= product.quantity}
           >
             +
           </button>

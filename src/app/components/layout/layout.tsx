@@ -1,11 +1,18 @@
+"use client";
 import Link from "next/link";
-import React, { ReactNode, Suspense } from "react";
+import React, { ReactNode, Suspense, useState } from "react";
 import LoginStatusDisplay from "./login-status-display";
 import SearchComponent from "./search-component";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import MenuIcon from "@mui/icons-material/Menu";
 import CartStatusDisplay from "./cart-status-display";
+import { Menu } from "@mui/material";
+import { Close } from "@mui/icons-material";
 
 const Layout = () => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const toggleMenu = () => setMenuOpen((prev) => !prev);
   return (
     <>
       <div>
@@ -37,26 +44,57 @@ const Layout = () => {
               </Link>
               <LoginStatusDisplay />
             </div>
-          </div>
-        </nav>
 
-        <div className="md:hidden bg-gray-900 text-white space-y-4 p-4">
-          <a href="/" className="block">
-            Home
-          </a>
-          <a href="/shop" className="block">
-            Shop
-          </a>
-          <a href="/about" className="block">
-            About
-          </a>
-          <a href="/contact" className="block">
-            Contact
-          </a>
-          <a href="/cart" className="block">
-            Cart
-          </a>
-        </div>
+            {/* Mobile Hamburger Icon */}
+            <div className="md:hidden text-white ">
+              <button onClick={toggleMenu}>
+                {menuOpen ? <Close /> : <MenuIcon />}
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile Menu Dropdown */}
+          {menuOpen && (
+            <div className="md:hidden bg-gray-900 text-white space-y-4 p-4">
+              <Link
+                href="/"
+                className="block hover:text-yellow-500"
+                onClick={toggleMenu}
+              >
+                Home
+              </Link>
+              {/* <Link
+                href="/shop"
+                className="block hover:text-yellow-500"
+                onClick={toggleMenu}
+              >
+                Shop
+              </Link>
+              <Link
+                href="/about"
+                className="block hover:text-yellow-500"
+                onClick={toggleMenu}
+              >
+                About
+              </Link>
+              <Link
+                href="/contact"
+                className="block hover:text-yellow-500"
+                onClick={toggleMenu}
+              >
+                Contact
+              </Link> */}
+              <Link
+                href="/cart"
+                className="block hover:text-yellow-500"
+                onClick={toggleMenu}
+              >
+                Cart
+              </Link>
+              <LoginStatusDisplay />
+            </div>
+          )}
+        </nav>
       </div>
     </>
   );

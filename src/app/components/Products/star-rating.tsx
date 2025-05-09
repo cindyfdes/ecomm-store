@@ -13,7 +13,7 @@ const StarRating = ({ rating, maxRating, onStarClick }: IStarRatingProps) => {
           key={index}
           className={`${
             index + 1 <= rating ? "text-yellow-600" : "text-gray-400"
-          } text-2xl           `}
+          } text-xl`}
           onClick={onStarClick}
         >
           &#9733;

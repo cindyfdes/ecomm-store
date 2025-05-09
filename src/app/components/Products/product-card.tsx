@@ -11,7 +11,7 @@ interface ISingleProductProps {
 
 const ProductCard = ({ product }: ISingleProductProps) => {
   return (
-    <div className="max-w-sm rounded overflow-hidden shadow-lg lg:h-100 md:h-150 flex flex-col ">
+    <div className="max-w-sm rounded overflow-hidden shadow-lg   flex flex-col hover:shadow-lg transition border border-gray-300 p-2 h-100">
       <Image
         className="w-full  h-1/2 object-contain"
         width={180}
@@ -19,22 +19,24 @@ const ProductCard = ({ product }: ISingleProductProps) => {
         src={product.image}
         alt={product.title}
       />
-      <div className="px-6 py-2">
-        <div className="font-bold text-xl mb-2 line-clamp-3 text-ellipsis">
-          <Link href={"/products-page/" + product.id}>{product.title}</Link>
-        </div>
+
+      <div className="font-bold text-m md:text-xl mb-2 line-clamp-2 text-ellipsis overflow-hidden pt-4">
+        <Link href={"/products-page/" + product.id}>{product.title}</Link>
       </div>
-      <div className="px-6  pb-2 flex items-center flex-col">
-        <span className="flex items-center justify-center">
+
+      <div className="flex items-center flex-col mt-auto ">
+        <div className="flex flex-col gap-2  items-center justify-center  lg:gap-4 lg:flex-row">
           <div className="px-2">
             <StarRating rating={product.rating?.rate} maxRating={5} />
           </div>
-          <p className="text-sm text-gray-600">{product.rating?.count}</p>
-        </span>
-        <div>&#8377; {product.price}</div>
-        <div>
-          <AddToCart product={product} />
+          <p className="text-sm text-gray-600">
+            {product.rating?.count} ratings
+          </p>
         </div>
+
+        <div className="py-2">&#8377; {product.price}</div>
+
+        <AddToCart product={product} />
       </div>
     </div>
   );

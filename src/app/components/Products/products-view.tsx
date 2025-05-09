@@ -6,6 +6,7 @@ import ProductCard from "./product-card";
 import { fetchAllProducts } from "./fetch-products";
 import { useSearchParams } from "next/navigation";
 import { useCartStore } from "@/app/stores/cart-store";
+import { Loader } from "../loader";
 
 const ProductsView = () => {
   const searchParams = useSearchParams();
@@ -42,29 +43,24 @@ const ProductsView = () => {
     return <div>{error}</div>;
   }
 
-  return (
-    <div className="grid grid-cols-3 gap-4">
-      {loading ? (
-        <div
-          className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-surface motion-reduce:animate-[spin_1.5s_linear_infinite] dark:text-white"
-          role="status"
-        >
-          <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
-            Loading...
-          </span>
-        </div>
-      ) : (
-        <>
-          {searchedProducts?.map((product, index) => (
-            <ProductCard
-              key={`${product.id}-${product.title}-${index}`}
-              product={product}
-            />
-          ))}
-        </>
-      )}
-    </div>
-  );
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader />
+      </div>
+    );
+  } else {
+    return (
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 ">
+        {searchedProducts?.map((product, index) => (
+          <ProductCard
+            key={`${product.id}-${product.title}-${index}`}
+            product={product}
+          />
+        ))}
+      </div>
+    );
+  }
 };
 
 export default ProductsView;

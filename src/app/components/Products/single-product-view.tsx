@@ -8,13 +8,15 @@ const SingleProductView = ({ product }: { product: Products }) => {
   return (
     <div>
       <div className="grid grid-cols-3 grid-rows-3 pt-7 justify-center">
-        <Image
-          className="m-9 mr-9 row-span-3 col-span-1"
-          src={product.image}
-          alt={product.title}
-          width={250}
-          height={228}
-        ></Image>
+        <div className="relative w-full aspect-[3/4] md:aspect-[4/3] ">
+          <Image
+            src={product.image}
+            alt={product.title}
+            fill
+            className="object-contain p-4"
+            sizes="(max-width: 1000px) 100vw, 33vw"
+          />
+        </div>
 
         <div className="pl-6 col-span-2">
           <span className="text-3xl">{product.title}</span>
