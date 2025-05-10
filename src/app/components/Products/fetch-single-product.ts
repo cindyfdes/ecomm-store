@@ -1,6 +1,8 @@
+import { Products } from "@/app/models/Products";
+
 export const fetchSingleProduct = async (prodId: string) => {
   let res;
-  let product: Product;
+  let product: Products | undefined;
   let error;
   try {
     res = await fetch(
